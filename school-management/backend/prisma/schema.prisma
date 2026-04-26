@@ -1,0 +1,371 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   @default("STUDENT") // OWNER | SUPER_ADMIN | ADMIN | TEACHER | STUDENT | PARENT
+  firstName String
+  lastName  String
+  phone     String?
+  status    String   @default("ACTIVE")  // ACTIVE | SUSPENDED | BANNED
+  blameCount   Int  @default(0)
+  crossCount   Int  @default(0)
+  warningCount Int  @default(0)
+  suspendUntil DateTime?
+  blameReason String?
+  mustChangePassword Boolean @default(false)
+  schoolId  Int?     // null for OWNER
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school   School?  @relation(fields: [schoolId], references: [id])
+  teacher Teacher?
+  student Student?
+  parent  Parent?
+  admin   Admin?
+  sanctions        Sanction[] @relation("UserSanctions")
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  homeworkSubmissions HomeworkSubmission[]
+}
+
+model School {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique // used in URLs / identification
+  createdAt DateTime @default(now())
+
+  users       User[]
+  settings    SchoolSettings?
+  classes     Class[]
+  subjects    Subject[]
+  announcements Announcement[]
+  events      Event[]
+  applications Application[]
+}
+
+model Sanction {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  issuedBy    Int
+  type        String   // CROSS | DETENTION | WORK_INTEREST | BLAME | WARNING
+  reason      String
+  // For DETENTION / WORK_INTEREST
+  hours       Float?
+  scheduledAt DateTime?
+  // For BLAME suspension
+  suspendUntil DateTime?
+  // Status
+  resolved    Boolean  @default(false)
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  user User @relation("UserSanctions", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Teacher {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio      String?
+  hireDate DateTime @default(now())
+
+  subjects    Subject[]
+  timetables  Timetable[]
+  grades      Grade[]
+  attendances Attendance[]
+  homeworks   Homework[]
+}
+
+model Parent {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  students Student[]
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studentCode String   @unique
+  enrollDate  DateTime @default(now())
+  classId     Int?
+  parentId    Int?
+
+  class       Class?       @relation(fields: [classId], references: [id])
+  parent      Parent?      @relation(fields: [parentId], references: [id])
+  grades      Grade[]
+  attendances Attendance[]
+  bulletins   Bulletin[]
+}
+
+model Class {
+  id       Int    @id @default(autoincrement())
+  name     String
+  level    String
+  year     String
+  schoolId Int
+
+  school     School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  students   Student[]
+  timetables Timetable[]
+  bulletins  Bulletin[]
+  homeworks  Homework[]
+
+  @@unique([name, schoolId])
+}
+
+model Subject {
+  id          Int     @id @default(autoincrement())
+  name        String
+  code        String
+  coefficient Float   @default(1)
+  teacherId   Int?
+  schoolId    Int
+
+  school     School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacher    Teacher?    @relation(fields: [teacherId], references: [id])
+  timetables Timetable[]
+  grades     Grade[]
+  homeworks  Homework[]
+
+  @@unique([code, schoolId])
+}
+
+model Timetable {
+  id        Int    @id @default(autoincrement())
+  classId   Int
+  subjectId Int
+  teacherId Int
+  day       String
+  startTime String
+  endTime   String
+  room      String?
+
+  class   Class   @relation(fields: [classId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+}
+
+model Grade {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  subjectId Int
+  teacherId Int
+  value     Float
+  maxValue  Float    @default(20)
+  comment   String?
+  date      DateTime @default(now())
+  period    String
+
+  student Student @relation(fields: [studentId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  teacherId Int
+  date      DateTime @default(now())
+  status    String   @default("PRESENT")
+  minutes   Int?
+  reason    String?
+  justified Boolean  @default(false)
+
+  student Student @relation(fields: [studentId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+}
+
+model Bulletin {
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  classId      Int
+  period       String
+  average      Float
+  classAverage Float?
+  rank         Int?
+  classSize    Int?
+  comment      String?
+  subjectData  String?  // JSON: [{ subjectId, subjectName, coefficient, studentAvg, classAvg }]
+  createdAt    DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
+
+  @@unique([studentId, period])
+}
+
+// Public application form — candidates apply before getting an account
+model Application {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  birthDate   String?
+  address     String?
+  role        String   @default("STUDENT")
+  prevSchool  String?
+  prevYear    String?
+  prevAverage Float?
+  prevGrades  String?
+  motivation  String?
+  parentFirstName String?
+  parentLastName  String?
+  parentEmail     String?
+  parentPhone     String?
+  customAnswers   String?
+  schoolId    Int
+  status      String   @default("PENDING")
+  reviewedBy  Int?
+  reviewNote  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@unique([email, schoolId])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String
+  entity    String?
+  entityId  Int?
+  details   String?
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model LoginAttempt {
+  id        Int      @id @default(autoincrement())
+  email     String
+  ip        String?
+  success   Boolean
+  createdAt DateTime @default(now())
+}
+
+model SchoolSettings {
+  id              Int     @id @default(autoincrement())
+  schoolId        Int     @unique
+  school          School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name            String  @default("My school")
+  address         String?
+  phone           String?
+  email           String?
+  website         String?
+  logoUrl         String?
+  principalName   String?
+  // Disciplinary thresholds
+  crossThreshold   Int     @default(5)   // crosses before auto-detention
+  blameSuspendDays Int     @default(3)   // days suspended after 3 blames
+  // Application form configuration (JSON arrays of field configs)
+  studentFormFields String?
+  teacherFormFields String?
+  customSections    String?  // JSON: [{ id, label }] — user-defined sections
+  updatedAt        DateTime @updatedAt
+}
+
+model Announcement {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  authorId   Int
+  targetRole String?
+  schoolId   Int
+  createdAt  DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  subject    String
+  body       String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model Homework {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  subjectId   Int
+  classId     Int
+  teacherId   Int
+  dueDate     DateTime
+  fileUrl     String?
+  fileName    String?
+  createdAt   DateTime @default(now())
+
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  class       Class    @relation(fields: [classId], references: [id])
+  teacher     Teacher  @relation(fields: [teacherId], references: [id])
+  submissions HomeworkSubmission[]
+}
+
+model HomeworkSubmission {
+  id          Int      @id @default(autoincrement())
+  homeworkId  Int
+  studentId   Int
+  userId      Int
+  content     String?
+  fileUrl     String?
+  fileName    String?
+  fileSize    Int?
+  grade       Float?
+  feedback    String?
+  submittedAt DateTime @default(now())
+
+  homework Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([homeworkId, studentId])
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  type        String   @default("EVENT")
+  targetRole  String?
+  createdBy   Int
+  schoolId    Int
+  createdAt   DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+}

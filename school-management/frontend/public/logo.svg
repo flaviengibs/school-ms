@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="16" fill="url(#shine)"/>
+
+  <!-- Mortarboard top (diamond shape) -->
+  <polygon points="32,10 52,20 32,30 12,20" fill="#ffffff" opacity="0.95"/>
+
+  <!-- Mortarboard base (trapezoid) -->
+  <path d="M20 23 L20 36 Q20 42 32 44 Q44 42 44 36 L44 23 L32 28 Z" fill="#ffffff" opacity="0.85"/>
+
+  <!-- Tassel string -->
+  <line x1="52" y1="20" x2="52" y2="34" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Tassel ball -->
+  <circle cx="52" cy="37" r="3" fill="#e0e7ff" opacity="0.9"/>
+
+  <!-- Tassel fringe lines -->
+  <line x1="50" y1="37" x2="48" y2="43" stroke="#c7d2fe" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+  <line x1="52" y1="38" x2="52" y2="44" stroke="#c7d2fe" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+  <line x1="54" y1="37" x2="56" y2="43" stroke="#c7d2fe" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Small star accent top-right -->
+  <circle cx="54" cy="10" r="2" fill="#e0e7ff" opacity="0.5"/>
+  <circle cx="10" cy="54" r="1.5" fill="#e0e7ff" opacity="0.35"/>
+</svg>
