@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Edit2, School, Users, BookOpen, LogIn } from "lucide-react";
-import api from "../lib/api";
+import api, { getFileUrl } from "../lib/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +79,7 @@ export default function SchoolsPage() {
               <div className="flex justify-between items-center mb-4">
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   {s.settings?.logoUrl ? (
-                    <img src={s.settings.logoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: "cover" }} onError={e => (e.currentTarget.style.display = "none")} />
+                    <img src={getFileUrl(s.settings.logoUrl)} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: "cover" }} onError={e => (e.currentTarget.style.display = "none")} />
                   ) : (
                     <div style={{ width: 36, height: 36, borderRadius: 8, background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <School size={18} color="#fff" />

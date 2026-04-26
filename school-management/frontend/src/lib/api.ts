@@ -72,4 +72,12 @@ api.interceptors.response.use(
   }
 );
 
+// Resolve a file URL — relative /uploads/... paths must point to the backend, not the frontend
+export const getFileUrl = (url: string | null | undefined): string => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const backendBase = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  return `${backendBase}${url}`;
+};
+
 export default api;

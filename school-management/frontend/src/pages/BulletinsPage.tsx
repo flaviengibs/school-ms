@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FileText, Zap, Download } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import api from "../lib/api";
+import api, { getFileUrl } from "../lib/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -109,7 +109,7 @@ export default function BulletinsPage() {
     let logoDataUrl: string | null = null;
     if (settings.logoUrl) {
       try {
-        const resp = await fetch(settings.logoUrl);
+        const resp = await fetch(getFileUrl(settings.logoUrl));
         const blob = await resp.blob();
         logoDataUrl = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();

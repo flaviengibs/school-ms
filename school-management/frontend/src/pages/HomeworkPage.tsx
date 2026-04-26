@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Plus, Trash2, BookOpen, CheckCircle, Clock, Paperclip, Download, FileText } from "lucide-react";
-import api from "../lib/api";
+import api, { getFileUrl } from "../lib/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -235,7 +235,7 @@ export default function HomeworkPage() {
                       {s.content && <div className="text-muted" style={{ marginTop: 4 }}>{s.content}</div>}
                       {s.fileUrl && (
                         <a
-                          href={s.fileUrl}
+                          href={getFileUrl(s.fileUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12, color: "var(--primary)", textDecoration: "none" }}

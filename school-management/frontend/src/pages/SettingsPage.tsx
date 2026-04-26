@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Settings, Save } from "lucide-react";
-import api from "../lib/api";
+import api, { getFileUrl } from "../lib/api";
 import toast from "react-hot-toast";
 import { FormFieldEditor, FieldConfig } from "../components/FormBuilder";
 
@@ -122,7 +122,7 @@ export default function SettingsPage() {
               <div className="card-body">
                 <div style={{ background: "#1e293b", borderRadius: 8, padding: "16px 20px", color: "#fff" }}>
                   {form.logoUrl && (
-                    <img src={form.logoUrl} alt="logo" style={{ height: 40, marginBottom: 10, borderRadius: 4 }} onError={e => (e.currentTarget.style.display = "none")} />
+                    <img src={getFileUrl(form.logoUrl)} alt="logo" style={{ height: 40, marginBottom: 10, borderRadius: 4 }} onError={e => (e.currentTarget.style.display = "none")} />
                   )}
                   <div style={{ fontSize: 18, fontWeight: 800 }}>{form.name || "School name"}</div>
                   {form.address && <div style={{ fontSize: 12, color: "rgba(255,255,255,.6)", marginTop: 4 }}>{form.address}</div>}
