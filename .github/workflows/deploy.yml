@@ -36,10 +36,8 @@ jobs:
       - name: Build
         working-directory: school-management/frontend
         env:
-          # Your Render backend URL, e.g. https://school-management-backend.onrender.com
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          # The base path must match your GitHub repo name: /your-repo-name/
-          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || '/' }}
+          VITE_BASE_PATH: /school-ms/
         run: npm run build
 
       - uses: actions/configure-pages@v5

@@ -4,11 +4,9 @@
     <meta charset="utf-8" />
     <title>School Management</title>
     <script>
-      // GitHub Pages SPA redirect
-      // Stores the path in sessionStorage and redirects to index.html
-      var path = window.location.pathname;
-      var base = '/'; // must match VITE_BASE_PATH
-      sessionStorage.setItem('redirect', path.replace(base, ''));
+      var base = '/school-ms/';
+      var path = window.location.pathname.replace(base, '') || '/';
+      sessionStorage.setItem('redirect', path);
       window.location.replace(base);
     </script>
   </head>
