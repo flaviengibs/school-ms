@@ -7,10 +7,10 @@ async function main() {
 
   // Platform owner (no school)
   await prisma.user.upsert({
-    where: { email: "owner@flaviengibs.github.io" },
+    where: { email: "owner@schoolms.gibbons.fr" },
     update: {},
     create: {
-      email: "owner@flaviengibs.github.io",
+      email: "owner@schoolms.gibbons.fr",
       password: await hash("Owner1234!"),
       firstName: "Platform",
       lastName: "Owner",
@@ -41,10 +41,10 @@ async function main() {
 
   // Super admin for this school
   await prisma.user.upsert({
-    where: { email: "superadmin@flaviengibs.github.io" },
+    where: { email: "superadmin@schoolms.gibbons.fr" },
     update: {},
     create: {
-      email: "superadmin@flaviengibs.github.io",
+      email: "superadmin@schoolms.gibbons.fr",
       password: await hash("Admin1234!"),
       firstName: "Super",
       lastName: "Admin",
@@ -56,10 +56,10 @@ async function main() {
 
   // Admin
   await prisma.user.upsert({
-    where: { email: "admin@flaviengibs.github.io" },
+    where: { email: "admin@schoolms.gibbons.fr" },
     update: {},
     create: {
-      email: "admin@flaviengibs.github.io",
+      email: "admin@schoolms.gibbons.fr",
       password: await hash("Admin1234!"),
       firstName: "School",
       lastName: "Admin",
@@ -71,10 +71,10 @@ async function main() {
 
   // Teacher
   const teacherUser = await prisma.user.upsert({
-    where: { email: "teacher@flaviengibs.github.io" },
+    where: { email: "teacher@schoolms.gibbons.fr" },
     update: {},
     create: {
-      email: "teacher@flaviengibs.github.io",
+      email: "teacher@schoolms.gibbons.fr",
       password: await hash("Teacher1234!"),
       firstName: "John",
       lastName: "Doe",
@@ -106,10 +106,10 @@ async function main() {
 
   // Student
   const studentUser = await prisma.user.upsert({
-    where: { email: "student@flaviengibs.github.io" },
+    where: { email: "student@schoolms.gibbons.fr" },
     update: {},
     create: {
-      email: "student@flaviengibs.github.io",
+      email: "student@schoolms.gibbons.fr",
       password: await hash("Student1234!"),
       firstName: "Alice",
       lastName: "Martin",
@@ -122,10 +122,10 @@ async function main() {
 
   // Parent
   const parentUser = await prisma.user.upsert({
-    where: { email: "parent@flaviengibs.github.io" },
+    where: { email: "parent@schoolms.gibbons.fr" },
     update: {},
     create: {
-      email: "parent@flaviengibs.github.io",
+      email: "parent@schoolms.gibbons.fr",
       password: await hash("Parent1234!"),
       firstName: "Marie",
       lastName: "Martin",
@@ -152,12 +152,24 @@ async function main() {
   ]) { await prisma.grade.create({ data: grade }).catch(() => {}); }
 
   console.log("Seed done.");
-  console.log("Owner:       owner@flaviengibs.github.io / Owner1234!");
-  console.log("Super admin: superadmin@flaviengibs.github.io / Admin1234!");
-  console.log("Admin:       admin@flaviengibs.github.io / Admin1234!");
-  console.log("Teacher:     teacher@flaviengibs.github.io / Teacher1234!");
-  console.log("Student:     student@flaviengibs.github.io / Student1234!");
-  console.log("Parent:      parent@flaviengibs.github.io / Parent1234!");
+  console.log("Owner:       owner@schoolms.gibbons.fr / Owner1234!");
+  console.log("Super admin: superadmin@schoolms.gibbons.fr / Admin1234!");
+  console.log("Admin:       admin@schoolms.gibbons.fr / Admin1234!");
+  console.log("Teacher:     teacher@schoolms.gibbons.fr / Teacher1234!");
+  console.log("Student:     student@schoolms.gibbons.fr / Student1234!");
+  console.log("Parent:      parent@schoolms.gibbons.fr / Parent1234!");
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+// Called on server startup — safe to run on every deploy (all upserts)
+export async function runSeed() {
+  try {
+    await main();
+  } catch (err) {
+    console.error("Seed error:", err);
+  }
+}
+
+// Allow direct execution: ts-node src/seed.ts
+if (require.main === module) {
+  main().catch(console.error).finally(() => prisma.$disconnect());
+}

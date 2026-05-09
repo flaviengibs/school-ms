@@ -6,6 +6,7 @@ import { createServer } from "http";
 import rateLimit from "express-rate-limit";
 import path from "path";
 import { initSocket } from "./socket";
+import { runSeed } from "./seed";
 
 import authRoutes from "./routes/auth.routes";
 import usersRoutes from "./routes/users.routes";
@@ -94,4 +95,7 @@ app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 // Init Socket.io
 initSocket(httpServer);
 
-httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+httpServer.listen(PORT, async () => {
+  console.log(`Server running on port ${PORT}`);
+  await runSeed();
+});

@@ -242,10 +242,10 @@ export default function LoginPage() {
             </button>
             <div style={{ marginTop: 24, padding: 14, background: "var(--bg)", borderRadius: 8, fontSize: 12, color: "var(--text-muted)", lineHeight: 1.8 }}>
               <div style={{ fontWeight: 600, marginBottom: 4, color: "var(--text)" }}>Demo accounts</div>
-              owner@flaviengibs.github.io · Owner1234!<br />
-              superadmin@flaviengibs.github.io · Admin1234!<br />
-              teacher@flaviengibs.github.io · Teacher1234!<br />
-              student@flaviengibs.github.io · Student1234!
+              owner@schoolms.gibbons.fr · Owner1234!<br />
+              superadmin@schoolms.gibbons.fr · Admin1234!<br />
+              teacher@schoolms.gibbons.fr · Teacher1234!<br />
+              student@schoolms.gibbons.fr · Student1234!
             </div>
           </form>
         )}
