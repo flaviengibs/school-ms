@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import api from "../lib/api";
 import toast from "react-hot-toast";
 import type { FieldConfig } from "../components/FormBuilder";
+import logoUrl from "../../public/logo.svg";
 
 type Tab = "login" | "apply";
 
@@ -179,7 +180,7 @@ export default function LoginPage() {
       {/* Left panel */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 64px", color: "#fff" }} className="hide-mobile">
         <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
-          <img src="/logo.svg" alt="SchoolMS" style={{ width: 44, height: 44, borderRadius: 10 }} />
+          <img src={logoUrl} alt="SchoolMS" style={{ width: 44, height: 44, borderRadius: 10 }} />
           SchoolMS
         </div>
         <div style={{ fontSize: 18, color: "rgba(255,255,255,.7)", maxWidth: 380, lineHeight: 1.7 }}>
@@ -203,7 +204,7 @@ export default function LoginPage() {
       <div style={{ width: 480, background: "#fff", display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 40px", overflowY: "auto" }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", display: "flex", alignItems: "center", gap: 10 }}>
-            <img src="/logo.svg" alt="SchoolMS" style={{ width: 32, height: 32, borderRadius: 7 }} />
+            <img src={logoUrl} alt="SchoolMS" style={{ width: 32, height: 32, borderRadius: 7 }} />
             {tab === "login" ? "Sign in" : "Apply for admission"}
           </div>
           <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>

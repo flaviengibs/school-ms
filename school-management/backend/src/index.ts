@@ -38,8 +38,12 @@ const PORT = process.env.PORT || 4000;
 app.use(helmet());
 
 // CORS — only allow the frontend origin
+// Origins never include a path, so strip any sub-path from FRONTEND_URL
+const rawFrontend = process.env.FRONTEND_URL || "http://localhost:3000";
+const frontendOrigin = rawFrontend.replace(/\/(school-ms\/?)?$/, "").replace(/\/$/, "");
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: frontendOrigin,
   credentials: true,
 }));
 

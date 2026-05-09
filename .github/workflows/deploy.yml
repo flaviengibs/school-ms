@@ -37,7 +37,7 @@ jobs:
         working-directory: school-management/frontend
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_BASE_PATH: /school-ms/
+          VITE_BASE_PATH: /
         run: npm run build
 
       - uses: actions/configure-pages@v5

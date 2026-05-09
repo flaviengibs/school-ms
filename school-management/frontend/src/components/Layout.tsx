@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useSocket } from "../contexts/SocketContext";
 import NotificationBell from "./NotificationBell";
 import ForcePasswordChange from "./ForcePasswordChange";
+import logoUrl from "../../public/logo.svg";
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard, Users, BookOpen, GraduationCap, UserCheck,
@@ -84,7 +85,7 @@ export default function Layout() {
       <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
         <div className="sidebar-logo">
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <img src="/logo.svg" alt="SchoolMS" style={{ width: 36, height: 36, borderRadius: 8 }} />
+            <img src={logoUrl} alt="SchoolMS" style={{ width: 36, height: 36, borderRadius: 8 }} />
             <div>
               <h1 style={{ fontSize: 15, fontWeight: 800, color: "#fff", letterSpacing: "-.01em" }}>SchoolMS</h1>
               <p style={{ fontSize: 10, color: "rgba(255,255,255,.45)", marginTop: 1 }}>Management system</p>
