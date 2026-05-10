@@ -27,12 +27,17 @@ const ensureSettings = async (schoolId: number) => {
 
 export const getSettings = async (req: AuthRequest, res: Response) => {
   try {
-    // Public endpoint (no auth token) — use first school
+    // Public endpoint (no auth token) — accept ?schoolId= query param, else first school
     let schoolId = req.user?.schoolId ?? null;
     if (!schoolId) {
-      const first = await prisma.school.findFirst();
-      if (!first) { res.json({}); return; }
-      schoolId = first.id;
+      const qid = req.query?.schoolId ? Number(req.query.schoolId) : null;
+      if (qid) {
+        schoolId = qid;
+      } else {
+        const first = await prisma.school.findFirst();
+        if (!first) { res.json({}); return; }
+        schoolId = first.id;
+      }
     }
     const s = await ensureSettings(schoolId);
     res.json(parse(s));

@@ -111,6 +111,8 @@ export default function LoginPage() {
 
   // Application
   const [role, setRole] = useState("STUDENT");
+  const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
+  const [schools, setSchools] = useState<{ id: number; name: string; settings?: { name?: string; logoUrl?: string } }[]>([]);
   const [appStep, setAppStep] = useState(1);
   const [appValues, setAppValues] = useState<Record<string, string | string[]>>({});
   const [appDone, setAppDone] = useState(false);
@@ -118,13 +120,23 @@ export default function LoginPage() {
   const [teacherFields, setTeacherFields] = useState<FieldConfig[]>([]);
   const [customSections, setCustomSections] = useState<{ id: string; label: string }[]>([]);
 
+  // Load school list once
   useEffect(() => {
-    api.get("/settings/public").then(r => {
+    api.get("/schools/public").then(r => {
+      setSchools(r.data);
+      if (r.data.length === 1) setSelectedSchoolId(r.data[0].id);
+    }).catch(() => {});
+  }, []);
+
+  // Load form fields whenever selected school changes
+  useEffect(() => {
+    const url = selectedSchoolId ? `/settings/public?schoolId=${selectedSchoolId}` : "/settings/public";
+    api.get(url).then(r => {
       setStudentFields(r.data.studentFormFields || []);
       setTeacherFields(r.data.teacherFormFields || []);
       setCustomSections(r.data.customSections || []);
     }).catch(() => {});
-  }, []);
+  }, [selectedSchoolId]);
 
   const activeFields = (role === "STUDENT" ? studentFields : teacherFields).filter(f => f.enabled);
   const sections = [...new Set(activeFields.map(f => f.section || "personal"))];
@@ -155,10 +167,11 @@ export default function LoginPage() {
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedSchoolId) { toast.error("Please select a school"); return; }
     setLoading(true);
     try {
       const knownIds = new Set(["firstName","lastName","email","phone","birthDate","address","prevSchool","prevYear","prevAverage","motivation","parentFirstName","parentLastName","parentEmail","parentPhone"]);
-      const payload: Record<string, any> = { role };
+      const payload: Record<string, any> = { role, schoolId: selectedSchoolId };
       const customAnswers: Record<string, any> = {};
       for (const [k, v] of Object.entries(appValues)) {
         if (knownIds.has(k)) payload[k] = v;
@@ -262,6 +275,23 @@ export default function LoginPage() {
               </div>
             )}
 
+            {/* School selector — always on step 1 */}
+            {appStep === 1 && (
+              <div className="form-group">
+                <label className="form-label">School <span style={{ color: "var(--danger)" }}>*</span></label>
+                <select
+                  value={selectedSchoolId ?? ""}
+                  onChange={e => { setSelectedSchoolId(Number(e.target.value) || null); setAppValues({}); setAppStep(1); }}
+                  required
+                >
+                  <option value="">Select a school…</option>
+                  {schools.map(s => (
+                    <option key={s.id} value={s.id}>{s.settings?.name || s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {/* Role selector — always on step 1 */}
             {appStep === 1 && (
               <div className="form-group">
@@ -318,7 +348,7 @@ export default function LoginPage() {
             <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
               We'll review your application and get back to you by email.
             </div>
-            <button className="btn btn-secondary" onClick={() => { setAppDone(false); setTab("login"); setAppStep(1); setAppValues({}); }}>
+            <button className="btn btn-secondary" onClick={() => { setAppDone(false); setTab("login"); setAppStep(1); setAppValues({}); setSelectedSchoolId(schools.length === 1 ? schools[0].id : null); }}>
               Back to sign in
             </button>
           </div>

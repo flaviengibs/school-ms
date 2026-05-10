@@ -17,6 +17,17 @@ export const getSchools = async (_req: AuthRequest, res: Response) => {
   } catch (err) { res.status(500).json({ message: "Server error", error: err }); }
 };
 
+// Public — minimal info for the application form school picker
+export const getPublicSchools = async (_req: any, res: Response) => {
+  try {
+    const schools = await prisma.school.findMany({
+      select: { id: true, name: true, settings: { select: { name: true, logoUrl: true } } },
+      orderBy: { name: "asc" },
+    });
+    res.json(schools);
+  } catch (err) { res.status(500).json({ message: "Server error", error: err }); }
+};
+
 export const getSchoolById = async (req: AuthRequest, res: Response) => {
   try {
     const school = await prisma.school.findUnique({
