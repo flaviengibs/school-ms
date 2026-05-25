@@ -21,9 +21,9 @@ async function main() {
 
   // Default school
   const school = await prisma.school.upsert({
-    where: { slug: "notre-dame" },
+    where: { slug: "x-paris" },
     update: {},
-    create: { name: "Notre-Dame Les Oiseaux", slug: "notre-dame" },
+    create: { name: "Polytechnique Paris", slug: "x-paris" },
   });
 
   // School settings
@@ -32,7 +32,7 @@ async function main() {
     update: {},
     create: {
       schoolId: school.id,
-      name: "Notre-Dame Les Oiseaux",
+      name: "Polytechnique Paris",
       studentFormFields: JSON.stringify(DEFAULT_STUDENT_FIELDS),
       teacherFormFields: JSON.stringify(DEFAULT_TEACHER_FIELDS),
       customSections: JSON.stringify([]),

@@ -83,10 +83,18 @@ export const createSchool = async (req: AuthRequest, res: Response) => {
 
 export const updateSchool = async (req: AuthRequest, res: Response) => {
   try {
+    const id = Number(req.params.id);
     const school = await prisma.school.update({
-      where: { id: Number(req.params.id) },
+      where: { id },
       data: { name: req.body.name, slug: req.body.slug },
     });
+    // Keep settings.name in sync if it was set to the old school name
+    if (req.body.name) {
+      await prisma.schoolSettings.updateMany({
+        where: { schoolId: id },
+        data: { name: req.body.name },
+      });
+    }
     res.json(school);
   } catch (err) { res.status(500).json({ message: "Server error", error: err }); }
 };

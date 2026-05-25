@@ -15,9 +15,12 @@ const onlineUsers = new Map<number, SocketUser>();
 let io: SocketServer;
 
 export const initSocket = (httpServer: HttpServer) => {
+  const rawFrontend = process.env.FRONTEND_URL || "http://localhost:3000";
+  const frontendOrigin = rawFrontend.replace(/\/(school-ms\/?)?$/, "").replace(/\/$/, "");
+
   io = new SocketServer(httpServer, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: frontendOrigin,
       methods: ["GET", "POST"],
       credentials: true,
     },

@@ -34,7 +34,7 @@ export default function SchoolsPage() {
 
   const openEdit = (s: School) => {
     setEditing(s);
-    setForm({ name: s.name, slug: s.slug, superAdminEmail: "", superAdminFirstName: "", superAdminLastName: "", superAdminPassword: "" });
+    setForm({ name: s.settings?.name || s.name, slug: s.slug, superAdminEmail: "", superAdminFirstName: "", superAdminLastName: "", superAdminPassword: "" });
     setShowModal(true);
   };
 
@@ -127,7 +127,7 @@ export default function SchoolsPage() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Slug (URL identifier)</label>
-                    <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value.toLowerCase().replace(/\s+/g, "-") }))} placeholder="e.g. notre-dame" required />
+                    <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value.toLowerCase().replace(/\s+/g, "-") }))} placeholder="e.g. x-paris" required />
                   </div>
                 </div>
 
