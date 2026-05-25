@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Edit2, School, Users, BookOpen, LogIn } from "lucide-react";
-import api, { getFileUrl } from "../lib/api";
+import api, { getFileUrl, ownerApi } from "../lib/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ export default function SchoolsPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  const load = () => api.get("/schools").then(r => setSchools(r.data)).catch(() => {});
+  const load = () => ownerApi.get("/schools").then(r => setSchools(r.data)).catch(() => {});
   useEffect(() => { load(); }, []);
 
   const openCreate = () => {
@@ -43,10 +43,10 @@ export default function SchoolsPage() {
     setLoading(true);
     try {
       if (editing) {
-        await api.put(`/schools/${editing.id}`, { name: form.name, slug: form.slug });
+        await ownerApi.put(`/schools/${editing.id}`, { name: form.name, slug: form.slug });
         toast.success("School updated");
       } else {
-        await api.post("/schools", form);
+        await ownerApi.post("/schools", form);
         toast.success("School created");
       }
       setShowModal(false);
@@ -58,7 +58,7 @@ export default function SchoolsPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this school and ALL its data? This cannot be undone.")) return;
-    try { await api.delete(`/schools/${id}`); toast.success("School deleted"); load(); }
+    try { await ownerApi.delete(`/schools/${id}`); toast.success("School deleted"); load(); }
     catch { toast.error("Error"); }
   };
 

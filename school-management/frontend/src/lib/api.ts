@@ -80,4 +80,13 @@ export const getFileUrl = (url: string | null | undefined): string => {
   return `${backendBase}${url}`;
 };
 
+// Owner-only API instance — always uses the base accessToken, never the school context token.
+// Use this for /schools routes so the OWNER role is preserved even when inside a school context.
+export const ownerApi = axios.create({ baseURL });
+ownerApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 export default api;
